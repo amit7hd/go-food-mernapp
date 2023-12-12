@@ -1,0 +1,120 @@
+//db.js gpt
+
+const mongoose = require('mongoose');
+const mongoURI = 'mongodb+srv://amit7hd:QscexeYLktxD0MPL@cluster0.vlev7j0.mongodb.net/gofoodmern?retryWrites=true&w=majority';
+
+const mongoDB = async () => {
+  try {
+    await mongoose.connect(mongoURI, { useNewUrlParser: true });
+    console.log("Connected to MongoDB");
+
+    const fetched_data = await mongoose.connection.db.collection("food_items");
+    const data = await fetched_data.find({}).toArray();
+    
+    global.food_items = data;
+    console.log(global.food_items);
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+  }
+};
+
+module.exports = mongoDB;
+
+
+//DisplayData.js
+
+const express = require('express');
+const router = express.Router();
+
+router.post('/foodData',async(req,res)=>{
+    try  {
+        console.log(global.food_items);
+        res.send ([global.food_items,global.foodCategory]);
+    } catch (error) {
+        console.error(error.message);
+        res.send("server error");
+    }
+})
+
+module.exports=router;
+
+//db.js
+const mongoose = require('mongoose');
+const mongoURI = 'mongodb+srv://amit7hd:QscexeYLktxD0MPL@cluster0.vlev7j0.mongodb.net/gofoodmern?retryWrites=true&w=majority';
+
+const mongoDB = async () => {
+  try {
+    await mongoose.connect(mongoURI, { useNewUrlParser: true });
+    console.log("Connected to MongoDB");
+
+    const fetched_data = await mongoose.connection.db.collection("food_items");
+    fetched_data.find({}).toArray(async function(err,data){
+        const foodCategory=await mongoose.connection.db.collection("foodCategory");
+        foodCategory.find({}).toArray(function(err,catData){
+            if(err) console.log(err);
+            else{
+                global.food_items=data;
+                global.foodCategory=catData;
+            }
+        })
+        //if(err) console.log(err);
+        //else{
+           // global.food_items=data;
+           // console.log(global.food_items);
+        //}
+    })
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+  }
+};
+
+module.exports = mongoDB;
+
+//home.js
+
+import React, { useState, useEffect } from 'react';
+import Navbar from '../Components/Navbar';
+import Carousal from '../Components/Carousal';
+import Card from '../Components/Card';
+import Footer from '../Components/Footer';
+
+export default function Home() {
+  const [foodCat, setFoodCat] = useState([]);
+  const [foodItem, setFoodItem] = useState([]);
+
+  const loadData = async () => {
+      let response = await fetch("http://localhost:5000/api/foodData", {
+        method: "post",
+        headers: {
+          'content-Type': 'application/json'
+        }
+      });
+      response=await response.json();
+      //console.log(response[0],response[1]);
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  return (
+    <div>
+      <div><Navbar /></div>
+      <div><Carousal /></div>
+      <div className='container'>
+        {
+          foodCat!==[]
+          ? foodCat.map((data)=>{
+              return (
+                <div>hello world</div>
+              )
+          })
+          : <div>""""""</div>
+        }
+        <Card />
+      </div>
+      <div><Footer /></div>
+    </div>
+  );
+}
+
