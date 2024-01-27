@@ -7,6 +7,11 @@ const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 const jwtSecret="aaaaabbbbbcccccdddddeeeeefffffgh";
 
+//This route is for creating a user. It uses express-validator to validate 
+//the email, name, and password in the request body.
+//If validation fails, it returns a 400 Bad Request response with validation errors.
+//If successful, it hashes the password using bcrypt and creates a new user using the User model.
+
 router.post('/createUser', [
     body('email', 'Invalid email').isEmail(),
     body('name', 'Invalid name').isLength({ min: 5 }),
@@ -40,6 +45,12 @@ If the email is found in the database, it compares the hashed password with the 
 If the passwords match, it generates a JWT (authToken) and sends it in the response.
 */}
 
+//This route is for user login. It validates the email and password in the request body. 
+//If validation fails, it returns a 400 Bad Request response with validation errors. 
+//If successful, it attempts to find the user by the provided email. 
+//If the user is found, it compares the hashed password with the provided password using bcrypt. 
+//If the passwords match, it generates a JWT (JSON Web Token) containing the user's ID and sends 
+//it in the response.
 
 router.post('/loginUser', [
     body('email').isEmail(),

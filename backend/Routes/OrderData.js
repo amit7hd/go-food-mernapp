@@ -1,10 +1,13 @@
 const express = require('express');
 
 const router = express.Router();
+//The express.Router() function is used to create a new router object. 
+//This function is used when you want to create a new router object
+// in your program to handle requests. 
 
 const Order = require('../models/Orders');
 
-router.post('/orderData', async (req, res) => {
+router.post('/orderData', async (req, res) => {    // api
     let data = req.body.order_data
     await data.splice(0,0,{Order_date:req.body.order_date})
     console.log("1231242343242354",req.body.email)
